@@ -56,11 +56,11 @@ writeShellApplication {
       fi
 
       line="$(grep -F "$currevision" "$westRoot"/west.yml | head -n1 || true)"
-      comment="${line#*#}"
+      comment="''${line#*#}"
       if [ "$comment" = "$line" ]; then
         exit 0
       fi
-      head="${comment//[[:space:]]/}"
+      head="''${comment//[[:space:]]/}"
 
       [ -z "$head" ] && exit 0
 
