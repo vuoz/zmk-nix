@@ -50,15 +50,19 @@ writeShellApplication {
 
       url="$(echo "$project" | yq -r .url)"
       currevision="$(echo "$project" | yq -r .revision)"
-      head="$(grep -F "$currevision" "$westRoot"/west.yml | cut -d"#" -f2 | tr -d " ")"
+
+      if ! printf '%s' "$currevision" | grep -Eq '^[0-9a-f]{40}$'; then
+        exit 0
+      fi
+
+      line="$(grep -F "$currevision" "$westRoot"/west.yml | head -n1 || true)"
+      head="$(printf '%s' "$line" | sed -n 's/.*#[[:space:]]*//p' | tr -d '[:space:]')"
 
       [ -z "$head" ] && exit 0
 
       newrevision="$(git ls-remote "$url" "$head" | sed -e "s/\t.*$//")"
       [ -n "$newrevision" ] && sed -i -e "s|$currevision|$newrevision|" "$westRoot"/west.yml
     ' "$westRoot"
-
-    git add "$westRoot"/west.yml
 
     # get new deps hash
     curhash="$(nix eval --raw "$toplevel"#"$attr".westDeps.outputHash)"
