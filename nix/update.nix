@@ -63,7 +63,7 @@ writeShellApplication {
     # get new deps hash
     curhash="$(nix eval --raw "$toplevel"#"$attr".westDeps.outputHash)"
     drv="$(nix eval --raw "$toplevel"#"$attr".westDeps --apply 'drv: (drv.overrideAttrs { outputHash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="; }).drvPath')"
-    newhash="$(nix build --no-link "$drv^*" 2>&1 >/dev/null | tail -n3 | grep -F got: | cut -d: -f2- | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' || true)"
+    newhash="$(nix build --no-link "$drv^*" 2>&1 >/dev/null | grep -F 'got:' | tail -n1 | cut -d: -f2- | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' || true)"
 
     # set new deps hash
     sed -i -e "s|\"$curhash\"|\"$newhash\"|" "$pkgpath"
