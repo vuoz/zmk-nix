@@ -58,6 +58,8 @@ writeShellApplication {
       [ -n "$newrevision" ] && sed -i -e "s|$currevision|$newrevision|" "$westRoot"/west.yml
     ' "$westRoot"
 
+    git add "$westRoot"/west.yml
+
     # get new deps hash
     curhash="$(nix eval --raw "$toplevel"#"$attr".westDeps.outputHash)"
     drv="$(nix eval --raw "$toplevel"#"$attr".westDeps --apply 'drv: (drv.overrideAttrs { outputHash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="; }).drvPath')"
