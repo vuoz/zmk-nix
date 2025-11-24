@@ -55,7 +55,7 @@ writeShellApplication {
       [ -z "$head" ] && exit 0
 
       newrevision="$(git ls-remote "$url" "$head" | sed -e "s/\t.*$//")"
-      sed -i -e "s|$currevision|$newrevision|" "$westRoot"/west.yml
+      [ -n "$newrevision" ] && sed -i -e "s|$currevision|$newrevision|" "$westRoot"/west.yml
     ' "$westRoot"
 
     # get new deps hash
