@@ -51,12 +51,16 @@ writeShellApplication {
       url="$(echo "$project" | yq -r .url)"
       currevision="$(echo "$project" | yq -r .revision)"
 
-      if ! printf '%s' "$currevision" | grep -Eq '^[0-9a-f]{40}$'; then
+      if ! [[ "$currevision" =~ ^[0-9a-f]{40}$ ]]; then
         exit 0
       fi
 
       line="$(grep -F "$currevision" "$westRoot"/west.yml | head -n1 || true)"
-      head="$(printf '%s' "$line" | sed -n 's/.*#[[:space:]]*//p' | tr -d '[:space:]')"
+      comment="${line#*#}"
+      if [ "$comment" = "$line" ]; then
+        exit 0
+      fi
+      head="${comment//[[:space:]]/}"
 
       [ -z "$head" ] && exit 0
 
